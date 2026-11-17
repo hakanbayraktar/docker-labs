@@ -1,0 +1,14 @@
+# Paket tanımı: pip wheel bu dosyaya bakarak .whl paketini üretir
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sepet-hesaplama"
+version = "1.0.0"
+description = "Sepet ara toplam, KDV ve genel toplam hesabı"
+requires-python = ">=3.12"
+dependencies = ["babel==2.16.0"]
+
+[tool.setuptools]
+py-modules = ["cart"]

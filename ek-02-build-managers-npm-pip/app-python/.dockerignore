@@ -1,0 +1,9 @@
+.venv/
+reports/
+__pycache__/
+.pytest_cache/
+dist/
+build/
+*.egg-info/
+Dockerfile
+.dockerignore

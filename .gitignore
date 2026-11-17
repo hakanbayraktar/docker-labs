@@ -1,0 +1,32 @@
+# Operating System & IDEs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Node & Python & Java caches
+node_modules/
+__pycache__/
+*.pyc
+target/
+
+# Legacy untracked folders
+pratik-lablar/
+
+# AI & Agent internal files
+.agents/
+.codex/
+AGENTS.md
+.docker-cheatsheet-root/
+
+# Lab ortam dosyalari (.env.example kopyalanarak olusturulur)
+.env
+
+# Lab sertifikalari ve ozel anahtarlar
+certs/
+*.key

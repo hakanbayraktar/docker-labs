@@ -1,0 +1,18 @@
+FROM python:3.12-alpine
+
+# 1. Root olmayan kullanıcı ve grup (UID/GID 10001)
+RUN addgroup -g 10001 -S appgroup && \
+    adduser -u 10001 -S appuser -G appgroup
+
+WORKDIR /app
+COPY app.py .
+
+# 2. Uygulamanın yazabileceği tek dizin
+RUN mkdir -p /app/data && chown appuser:appgroup /app/data
+
+# 3. Root kullanıcısını bırak
+USER 10001:10001
+
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8080
+CMD ["python", "app.py"]

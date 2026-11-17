@@ -1,0 +1,79 @@
+# Proje adı: image, container, ağ ve volume adlarının önüne gelir (shop-api-1, shop_db_data).
+name: shop
+
+services:
+  # Arayüz ve giriş noktası: index.html'i sunar, /api/ isteklerini api servisine iletir
+  web:
+    build: ./services/web
+    ports:
+      - "${WEB_PORT:-19001}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - public
+
+  # Ürün ve sipariş API'si (FastAPI)
+  api:
+    build: ./services/api
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    networks:
+      - public
+      - internal
+
+  # Siparişleri Redis kuyruğundan alıp işleyen arka plan servisi
+  worker:
+    build: ./services/worker
+    env_file: .env
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - internal
+
+  # Redis: ürün listesi için cache, siparişler için kuyruk
+  cache:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - internal
+
+  db:
+    image: postgres:16-alpine
+    env_file: .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - internal
+
+volumes:
+  db_data:
+  redis_data:
+
+networks:
+  public:
+  internal:
+    internal: true
